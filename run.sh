@@ -1,4 +1,4 @@
 cd /app
 
 source /parameters/params
-java -jar shipping.jar
+java -javaagent:/app/newrelic.jar -jar shipping.jar
