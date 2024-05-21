@@ -1,4 +1,4 @@
 cd /app
 
 source /parameters/params
-java -javaagent:/app/newrelic.jar -jar shipping.jar
+java -XX:MaxRAMPercentage=90 -javaagent:/app/newrelic.jar -jar shipping.jar
