@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      labels:
+        app: shipping
+    spec:
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: "dev.roboshop.shipping.CART_ENDPOINT,CART_ENDPOINT  dev.roboshop.shipping.DB_HOST,DB_HOST"
+      containers:
+        - name: shipping
+          image: madhanmohanreddyeeda/github-repo-shipping
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "2.5Gi"
+              cpu: "1500m"
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 10
+            periodSeconds: 10
+      volumes:
+        - name: parameters
+          emptyDir: { }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shipping
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: ReplicaSet
+    name: shipping
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shipping-schema-load
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      volumes:
+        - name: parameters
+          emptyDir: {}
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: "dev.roboshop.rds.endpoint,DB_HOST dev.roboshop.rds.username,DB_USER dev.roboshop.rds.password,DB_PASS"
+      containers:
+        - name: schema-load
+          image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
+          imagePullPolicy: Always
+          env:
+            - name: COMPONENT
+              value: shipping
+            - name: SCHEMA_TYPE
+              value: mysql
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+      restartPolicy: Never
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+spec:
+  selector:
+    app: shipping
+  ports:
+    -  protocol: TCP
+       port: 80
+       targetPort: 8080
