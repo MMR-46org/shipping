@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: {{ .Values.component }}
+  labels:
+    app: {{ .Values.component }}
+spec:
+  replicas: {{ .Values.replica }}
+  selector:
+    matchLabels:
+      app: {{ .Values.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.component }}
+    spec:
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: {{ .Values.PARAMS }}
+      containers:
+        - name: {{ .Values.component }}
+          image: madhanmohanreddyeeda/github-repo-{{ .Values.component }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "150Mi"
+              cpu: "100m"
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+      volumes:
+        - name: parameters
+          emptyDir: { }

@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: { { .Values.component } }-schema-load
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      volumes:
+        - name: parameters
+          emptyDir: {}
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: {{ .Values.job.PARAMS }}
+      containers:
+        - name: schema-load
+          image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
+          imagePullPolicy: Always
+          env:
+            - name: COMPONENT
+              value: shipping
+            - name: SCHEMA_TYPE
+              value: mysql
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+      restartPolicy: Never
