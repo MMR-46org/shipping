@@ -25,9 +25,9 @@ spec:
           imagePullPolicy: Always
           env:
             - name: COMPONENT
-              value: shipping
+              value: { { .Values.component } }
             - name: SCHEMA_TYPE
-              value: mysql
+              value: { { .Values.schema_type } }
           volumeMounts:
             - mountPath: /parameters
               name: parameters
