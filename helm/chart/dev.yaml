@@ -1,7 +1,3 @@
 env: dev
 replica: 2
 PARAMS: "dev.roboshop.shipping.CART_ENDPOINT,CART_ENDPOINT  dev.roboshop.shipping.DB_HOST,DB_HOST"
-
-
-job:
-  PARAMS: "dev.roboshop.rds.endpoint,DB_HOST dev.roboshop.rds.username,DB_USER dev.roboshop.rds.password,DB_PASS"
