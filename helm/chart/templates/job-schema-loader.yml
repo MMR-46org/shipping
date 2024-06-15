@@ -3,12 +3,11 @@ kind: Job
 metadata:
   name: { { .Values.component } }-schema-load
 spec:
-  backoffLimit: 4
   template:
     spec:
       volumes:
         - name: parameters
-          emptyDir: {}
+          emptyDir: { }
       initContainers:
         - name: parameters-pull
           image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
@@ -18,7 +17,7 @@ spec:
               name: parameters
           env:
             - name: PARAMS
-              value: {{ .Values.job.PARAMS }}
+              value: { { .Values.job.PARAMS } }
       containers:
         - name: schema-load
           image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
@@ -32,3 +31,4 @@ spec:
             - mountPath: /parameters
               name: parameters
       restartPolicy: Never
+  backoffLimit: 4
