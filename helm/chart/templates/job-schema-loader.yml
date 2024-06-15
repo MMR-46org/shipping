@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: shipping-schema-load
+  name: { { .Values.component } }_schema_load
 spec:
   template:
     spec:
@@ -17,7 +17,7 @@ spec:
               name: parameters
           env:
             - name: PARAMS
-              value: "dev.roboshop.rds.endpoint,DB_HOST dev.roboshop.rds.username,DB_USER dev.roboshop.rds.password,DB_PASS"
+              value: { { .Values.job.PARAMS } }
       containers:
         - name: schema-load
           image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
