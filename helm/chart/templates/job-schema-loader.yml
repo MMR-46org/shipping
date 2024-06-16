@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Values.component }}_schema_load
+  name: {{ .Values.component }}-schema-load
 spec:
   template:
     spec:
