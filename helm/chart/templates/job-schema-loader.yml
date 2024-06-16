@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: { { .Values.component } }_schema_load
+  name: {{ .Values.component }}_schema_load
 spec:
   template:
     spec:
@@ -17,16 +17,16 @@ spec:
               name: parameters
           env:
             - name: PARAMS
-              value: { { .Values.job.PARAMS } }
+              value: {{ .Values.job.PARAMS }}
       containers:
         - name: schema-load
           image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
           imagePullPolicy: Always
           env:
             - name: COMPONENT
-              value: { { .Values.component } }
+              value: {{ .Values.component }}
             - name: SCHEMA_TYPE
-              value: { { .Values.schema_type } }
+              value: {{ .Values.schema_type }}
           volumeMounts:
             - mountPath: /parameters
               name: parameters
