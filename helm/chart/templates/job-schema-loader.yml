@@ -10,7 +10,7 @@ spec:
           emptyDir: { }
       initContainers:
         - name: parameters-pull
-          image: docker.io/madhanmohanreddyeeda/github-repo-parameter-store-init-container-image
+          image: 512646826903.dkr.ecr.us-east-1.amazonaws.com/parameter-store-init-container-image:v1.0.6
           imagePullPolicy: Always
           volumeMounts:
             - mountPath: /parameters
@@ -20,7 +20,7 @@ spec:
               value: {{ .Values.job.PARAMS }}
       containers:
         - name: schema-load
-          image: docker.io/madhanmohanreddyeeda/github-repo-schema-loader
+          image: 512646826903.dkr.ecr.us-east-1.amazonaws.com/schema-loader:v1.0.6
           imagePullPolicy: Always
           env:
             - name: COMPONENT
