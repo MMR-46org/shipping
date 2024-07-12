@@ -14,6 +14,7 @@ spec:
       labels:
         app: {{ .Values.component }}
     spec:
+      serviceAccountName: {{ .Values.component }}
       initContainers:
         - name: parameters-pull
           image: 512646826903.dkr.ecr.us-east-1.amazonaws.com/parameter-store-init-container-image:v1.0.6
