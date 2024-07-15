@@ -1,5 +1,5 @@
 env: dev
-replica: 2
+replica: 1
 PARAMS: "dev.roboshop.shipping.CART_ENDPOINT,CART_ENDPOINT  dev.roboshop.shipping.DB_HOST,DB_HOST"
 
 job:
